@@ -45,6 +45,7 @@ export default function App() {
 
      <main>
        <h1>My todos</h1>
+       <h2>{user?.signInDetails?.loginId}</h2>
        <button onClick={createTodo}>+ new</button>
        <ul>
          {todos.map((todo) => (

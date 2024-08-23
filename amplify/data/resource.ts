@@ -1,3 +1,6 @@
+// Define and configure your auth resource
+//データバックエンドを構成する中心的な場所
+//バックエンドのデータモデルであるa.model()などを定義
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 /*== STEP 1 ===============================================================
@@ -10,11 +13,17 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
-      
+      /*ラベルの属性をスキーマに追加*/
+      label: a.string(),
     })
-    .authorization(allow => [allow.owner()]),
-    //.authorization((allow) => [allow.publicApiKey()]),
-    
+
+    //allow.publicApiKey() rule designates that anyone authenticated using an API key can create, read, update, and delete todos.
+    // If you use a allow.publicApiKey() authorization rules for your data models, you need to use "apiKey" as an authorization mode.
+    .authorization((allow) => [allow.publicApiKey()]),
+
+    //Per-user/per-owner data access
+    //to restrict a record's access to a specific user. When owner authorization is configured, only the record's owner is allowed the specified operations.
+    //.authorization(allow => [allow.owner()]),  
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -23,12 +32,12 @@ export const data = defineData({
   schema,
   authorizationModes: {
     // to sign API requests with the user authentication token. 
-    defaultAuthorizationMode: 'userPool',
-    
-/*  defaultAuthorizationMode: "apiKey",
+    // defaultAuthorizationMode: 'userPool',
+
+  defaultAuthorizationMode: "apiKey",
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
-    }, */
+    }, 
   },
 });
 

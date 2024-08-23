@@ -6,15 +6,23 @@ import '@aws-amplify/ui-react/styles.css'
 
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/data";
+// Path to your backend resource definition
 import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import { Amplify } from "aws-amplify";
+//outputs.json file contains your API's endpoint information and auth configurations
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 
 Amplify.configure(outputs);
 
-const client = generateClient<Schema>();
+const client = generateClient<Schema>(
+/*    {
+  authMode: 'userPool'
+ }   */
+  //To apply the same authorization mode on all requests from a Data client, specify the "authMode" parameter on the "generateClient" function.
+  {authMode: 'apiKey'}
+);
 
 export default function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
@@ -31,8 +39,10 @@ export default function App() {
 
   function createTodo() {
     client.models.Todo.create({
-      content: window.prompt("Todo content"),
+      content: window.prompt("追加したいタスク"),
+      label: window.prompt("ラベルの種類"),
     });
+    //listTodos();
   }
     
   function deleteTodo(id: string) {
@@ -52,7 +62,7 @@ export default function App() {
            <li 
            onClick={() => deleteTodo(todo.id)}
            key={todo.id}>
-             {todo.content}
+             {todo.content}  {todo.label}   
            </li>
          ))}
        </ul>
